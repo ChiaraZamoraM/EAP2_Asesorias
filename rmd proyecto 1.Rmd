@@ -1,0 +1,274 @@
+---
+title: "trabajo índice de vulnerabilidad"
+author: "Andrea Lisboa Cárdenas"
+date: "2023-11-11"
+output: html_document
+---
+
+CARGAR CONJUNTO DE DATOS:
+trabajaremos con la data de:
+
+registro_data <-"ENPOVE2022_V_200-300-400-500-600-700-800.csv" (registro de control migratorio; tenencia de permiso migratorio; y la variable dependiente contrato laboral, esta última NO se usará para crear el índice)
+
+sexo_data <- "ENPOVE2022_V_200.csv"
+
+vivienda_data <- "ENPOVE2022_V_100.csv"
+
+discriminacion_data <- "ENPOVE2022_V_700.csv"
+
+- De sexo_data sólo usaremos P204 y P205_A
+- De registro_data sólo usaremos P305, P307 y P603
+- De discriminacion_data sólo usaremos P701
+- De vivienda_data solo usaremos P111A
+
+# Variable Sexo:
+```{r}
+#library(rio)
+#sexo_data=import("https://github.com/unipepe/Determinantes-de-la-formalizaci-n-del-empleo-en-la-poblaci-n-migrante-venezolana-en-Per-/raw/main/ENPOVE2022_V_200%20Caracter%C3%ADsticas%20de%20los%20residentes%20del%20hogar.csv")
+
+library(foreign)
+
+# Importar el archivo SPSS y mantener las etiquetas como factores
+sexo_data <- read.spss("https://github.com/ChiaraZamoraM/EAP2_Asesorias/raw/main/ENPOVE2022_V_200%20Caracter%C3%ADsticas%20de%20los%20residentes%20del%20hogar.SAV", to.data.frame = TRUE)
+
+str(sexo_data$P204)
+head(sexo_data$P204)
+table(sexo_data$P204)
+```
+
+# Recodificación:
+```{r}
+#sexo_data$P204 <- ifelse(sexo_data$P204 == "1.Hombre", 1, 0)
+#sexo_data$P204 <- factor(sexo_data$P204, levels = c(0, 1), labels = c("Mujer", "Hombre"))
+
+#str(sexo_data$P204)
+#head(sexo_data$P204)
+#table(sexo_data$P204)
+```
+
+# Variable Edad:
+```{r}
+str(sexo_data$P205_A)
+```
+
+# Variable "registró entrada en un puesto de control migratorio":
+```{r}
+#registro_data=import("https://github.com/unipepe/Determinantes-de-la-formalizaci-n-del-empleo-en-la-poblaci-n-migrante-venezolana-en-Per-/raw/main/ENPOVE2022_V_200-300-400-500-600-700-800.csv")
+
+library(foreign)
+
+# Importar el archivo SPSS y mantener las etiquetas como factores
+migracion_data <- read.spss("https://github.com/ChiaraZamoraM/EAP2_Asesorias/raw/main/ENPOVE%202022_V_300%20Migraci%C3%B3n%20I.SAV", to.data.frame = TRUE)
+```
+
+# Recodificación:
+```{r}
+library(dplyr)
+# Recodificar 1 = Si registró entrada
+#registro_data$P305[registro_data$P305 == 1] <- 1
+
+# Recodificar NA = No registró entrada
+#registro_data$P305[is.na(registro_data$P305)] <- 2
+#registro_data$P305 <- factor(registro_data$P305, levels = c(1, 2), labels = c("Sí", "No"))
+
+str(registro_data$P305)
+#head(registro_data$P305)
+#table(registro_data$P305)
+```
+
+# Variable "Cuenta con permiso migratorio vigente":
+```{r}
+str(registro_data$P307)
+```
+
+# Recodificación:
+```{r}
+# Recodificar los que sí tienen permisos migratorios vigentes (1 al 14) a 1
+#registro_data$P307[registro_data$P307 %in% 1:14] <- 1
+
+# Recodificar sin permiso (15) a 0 
+#registro_data$P307[registro_data$P307 == 15] <- 0
+
+# Recodificar NA también a 0 (sin permiso)
+#registro_data$P307[is.na(registro_data$P307)] <- 0
+#registro_data$P307 <- factor(registro_data$P307, levels = c(0, 1), labels = c("Sí", "No"))
+
+
+# Revisar codificación 
+table(registro_data$P307)
+str(registro_data$P307)
+```
+
+# Variable "Sintió discriminación por ser persona venezolana desde que llegó al Perú":
+```{r}
+#discriminacion_data=import("https://github.com/unipepe/Determinantes-de-la-formalizaci-n-del-empleo-en-la-poblaci-n-migrante-venezolana-en-Per-/raw/main/ENPOVE2022_V_700%20Discriminaci%C3%B3n.csv")
+
+library(foreign)
+
+# Importar el archivo SPSS y mantener las etiquetas como factores
+discriminacion_data <- read.spss("https://github.com/ChiaraZamoraM/EAP2_Asesorias/raw/main/ENPOVE2022_V_700%20Discriminaci%C3%B3n.SAV", to.data.frame = TRUE)
+```
+
+```{r}
+str(discriminacion_data$P701)
+#table(discriminacion_data$P701)
+```
+
+# Recodificación:
+```{r}
+#discriminacion_data$P701 <- ifelse(discriminacion_data$P701 == "1.Sí", 1, 0)
+#discriminacion_data$P701 <- factor(discriminacion_data$P701, levels = c(0, 1), labels = c("No", "Sí"))
+str(discriminacion_data$P701)
+#table(discriminacion_data$P701)
+```
+
+# Variable Dependiente: ¿HA FIRMADO ALGÚN CONTRATO LABORAL O BRINDÓ ALGÚN COMPROBANTE DE PAGO POR SUS SERVICIOS?
+```{r}
+library(foreign)
+
+# Importar el archivo SPSS y mantener las etiquetas como factores
+empleo_data <- read.spss("https://github.com/ChiaraZamoraM/EAP2_Asesorias/raw/main/ENPOVE2022_V_600%20Empleo.SAV", to.data.frame = TRUE)
+str(registro_data$P613)
+table(registro_data$P613)
+```
+
+# Recodificación:
+```{r}
+# Recodificamos NA como 0 (No firmó contrato)
+#registro_data$P613[is.na(registro_data$P613)] <- 0
+
+# Crear factor con etiquetas
+#registro_data$P613 <- factor(registro_data$P613, 
+ #                            levels = c(1,0),
+  #                           labels = c("Firmó contrato", "No firmó contrato"))
+
+# Revisar resultado
+str(registro_data$P613)
+table(registro_data$P613)
+```
+
+# Variable "Número de cambios de vivienda en los últimos 6 meses"
+```{r}
+#vivienda_data=import("https://github.com/unipepe/Determinantes-de-la-formalizaci-n-del-empleo-en-la-poblaci-n-migrante-venezolana-en-Per-/raw/main/ENPOVE2022_V_100%20Caracter%C3%ADsticas%20de%20la%20vivienda%20y%20del%20hogar.csv")
+
+library(foreign)
+
+# Importar el archivo SPSS y mantener las etiquetas como factores
+vivienda_data <- read.spss("https://github.com/ChiaraZamoraM/EAP2_Asesorias/raw/main/ENPOVE2022_V_100%20Caracter%C3%ADsticas%20de%20la%20vivienda%20y%20del%20hogar.sav", to.data.frame = TRUE)
+
+str(vivienda_data$P111A)
+table(vivienda_data$P111A)
+```
+
+# Recodificación:
+```{r}
+# Recodificamos NA como 0 cambios 
+#vivienda_data$P111A[is.na(vivienda_data$P111A)] <- 0
+
+# Crear factor con etiquetas 
+#vivienda_data$P111A <- factor(vivienda_data$P111A,
+ #                             levels = 0:5,
+  #                            labels = c("0 cambios",
+   #                                      "1 cambio",
+    #                                     "2 cambios",
+     #                                    "3 cambios",  
+      #                                   "4 cambios",
+       #                                  "5 cambios"))
+
+# Revisar resultado 
+str(vivienda_data$P111A)
+table(vivienda_data$P111A)
+```
+
+```{r}
+# Verificar que está contenido
+# Ver los nombres de las variables de la base de datos registro_data
+names(registro_data)
+```
+
+```{r}
+# Comparar los nombres de las variables de la base de datos registro_data con los nombres de las variables que quieres verificar
+variables_a_verificar <- c("CCDD", "DEPARTAMENTO", "CCPP", "PROVINCIA", "CCDI", "DISTRITO", "CIUDAD", "CONGLOMERADO", "NSELV", "VIVIENDA", "THOGAR", "NHOGAR", "ESTRATO", "VRESFIN", "RESFIN", "P15", "P15_N", "factorfinal")
+setdiff(variables_a_verificar, names(registro_data))
+setdiff(variables_a_verificar, names(vivienda_data))
+```
+
+```{r}
+#sexo_data$clave <- with(sexo_data, paste0(CCDD, DEPARTAMENTO, CCPP, PROVINCIA, CCDI, DISTRITO, CIUDAD, CONGLOMERADO, NSELV, VIVIENDA, THOGAR, NHOGAR, ESTRATO, VRESFIN, RESFIN, P15, P15_N, factorfinal))
+
+#registro_data$clave <- with(registro_data, paste0(CCDD, DEPARTAMENTO, CCPP, PROVINCIA, CCDI, DISTRITO, CIUDAD, CONGLOMERADO, NSELV, VIVIENDA, THOGAR, NHOGAR, ESTRATO, VRESFIN, RESFIN, P15, P15_N, factorfinal))
+
+#discriminacion_data$clave <- with(discriminacion_data, paste0(CCDD, DEPARTAMENTO, CCPP, PROVINCIA, CCDI, DISTRITO, CIUDAD, CONGLOMERADO, NSELV, VIVIENDA, THOGAR, NHOGAR, ESTRATO, VRESFIN, RESFIN, P15, P15_N, factorfinal))
+
+#vivienda_data$clave <- with(vivienda_data, paste0(CCDD, DEPARTAMENTO, CCPP, PROVINCIA, CCDI, DISTRITO, CIUDAD, CONGLOMERADO, NSELV, VIVIENDA, THOGAR, NHOGAR, ESTRATO, VRESFIN, RESFIN, P15, P15_N, factorfinal))
+```
+
+```{r}
+base_final <- merge(sexo_data, discriminacion_data, by= c("CCDD", "DEPARTAMENTO","DEPAR0", "CCPP", "PROVINCIA", "PROVI0", "CCDI", "DISTRITO", "DISTR0", "CIUDAD", "CONGLOMERADO", "NSELV", "VIVIENDA", "THOGAR", "NHOGAR", "ESTRATO", "VRESFIN", "RESFIN", "P15", "P15_N", "P200_N", "factorfinal"))
+
+base_final2 <- merge(base_final, empleo_data, by = c("CCDD", "DEPARTAMENTO","DEPAR0", "CCPP", "PROVINCIA", "PROVI0", "CCDI", "DISTRITO", "DISTR0", "CIUDAD", "CONGLOMERADO", "NSELV", "VIVIENDA", "THOGAR", "NHOGAR", "ESTRATO", "VRESFIN", "RESFIN", "P15", "P15_N", "P200_N", "factorfinal"))
+
+#Desde aquí hay problemas
+
+base_final3 <- merge(migracion_data, vivienda_data, by= c("CCDD", "DEPARTAMENTO", "CCPP", 
+                                                                   "PROVINCIA", "CCDI", "DISTRITO",
+                                                                   "CIUDAD", "CONGLOMERADO", "NSELV", 
+                                                                   "VIVIENDA", "ESTRATO", "VRESFIN",
+                                                                   "RESFIN", "THOGAR", "NHOGAR", "P15",
+                                                                   "P15_N", "P200_N"), all = TRUE)
+
+base_final4 <- merge(base_final2, vivienda_data, by = c("CCDD", "DEPARTAMENTO", "CCPP", "PROVINCIA", "CCDI", "DISTRITO", "CIUDAD", "CONGLOMERADO", "NSELV", "VIVIENDA", "THOGAR", "NHOGAR", "ESTRATO", "VRESFIN", "RESFIN", "P15", "P15_N"))
+```
+
+```{r}
+tipos_datos_1 <- sapply(base_final2[c("CCDD", "DEPARTAMENTO", "CCPP", 
+                                                                   "PROVINCIA", "CCDI", "DISTRITO",
+                                                                   "CIUDAD", "CONGLOMERADO", "NSELV", 
+                                                                   "VIVIENDA", "ESTRATO", "VRESFIN",
+                                                                   "RESFIN", "THOGAR", "NHOGAR", "P15",
+                                                                   "P15_N", "P200_N", "factorfinal")], class)
+
+# Verificar tipos de datos en ConjuntoDatos4
+tipos_datos_4 <- sapply(migracion_data[c("CCDD", "DEPARTAMENTO", "CCPP", 
+                                                                   "PROVINCIA", "CCDI", "DISTRITO",
+                                                                   "CIUDAD", "CONGLOMERADO", "NSELV", 
+                                                                   "VIVIENDA", "ESTRATO", "VRESFIN",
+                                                                   "RESFIN", "THOGAR", "NHOGAR", "P15",
+                                                                   "P15_N", "P200_N", "factorfinal")], class)
+
+# Mostrar los tipos de datos
+tipos_datos_1
+tipos_datos_4
+```
+
+
+
+```{r}
+# Obtener nombres comunes entre las bases de datos
+vars_comunes <- intersect(names(base_final2), names(vivienda_data))
+vars_comunes
+```
+
+
+```{r}
+base_final <- subset(base_final, select = -c(clave))
+```
+
+```{r}
+write.csv(base_final, "base_final.csv", row.names = FALSE)
+```
+
+```{r}
+str(base_final)
+```
+
+
+
+
+
+
+
+
+
+
+
